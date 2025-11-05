@@ -31,7 +31,12 @@ export class ActionTextAttachmentMarkNode extends MarkNode {
     }
 
     static importJSON(serializedNode) {
-        return $createActionTextAttachmentMarkNode(serializedNode.dataset, serializedNode.sgid)
+        const node = new ActionTextAttachmentMarkNode(
+            serializedNode.ids || [],
+            serializedNode.dataset,
+            serializedNode.sgid
+        )
+        return $applyNodeReplacement(node)
     }
 
     static importDOM() {
@@ -115,8 +120,8 @@ export class ActionTextAttachmentMarkNode extends MarkNode {
         }
         // Also check that dataset and sgid match
         return node instanceof ActionTextAttachmentMarkNode &&
-            this.sgid === node.sgid &&
-            this.__dataset.selectionGroup === node.__dataset.selectionGroup
+               this.sgid === node.sgid &&
+               this.__dataset.selectionGroup === node.__dataset.selectionGroup
     }
 
     excludeFromCopy(destination) {
@@ -140,5 +145,5 @@ export class ActionTextAttachmentMarkNode extends MarkNode {
 }
 
 export function $createActionTextAttachmentMarkNode(dataset = {}, sgid = null) {
-    return $applyNodeReplacement(new ActionTextAttachmentMarkNode([], dataset, sgid))
+    return $applyNodeReplacement(new ActionTextAttachmentMarkNode([], dataset, sgid));
 }

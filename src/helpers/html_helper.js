@@ -5,12 +5,12 @@ const VISUALLY_RELEVANT_ELEMENTS_SELECTOR = [
   "form", "input", "textarea", "select", "button", "code", "blockquote", "hr"
 ].join(",")
 
-const ALLOWED_HTML_TAGS = [ "a", "action-text-attachment", "b", "blockquote", "br", "code", "em",
-  "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "li", "ol", "p", "pre", "q", "s", "strong", "ul" ]
+const ALLOWED_HTML_TAGS = [ "a", "action-text-attachment", "action-text-attachment-mark-node", "b", "blockquote", "br", "code", "em",
+  "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "li", "ol", "p", "pre", "q", "s", "span", "strong", "ul" ]
 
 const ALLOWED_HTML_ATTRIBUTES = [ "alt", "caption", "class", "content", "content-type", "contenteditable",
-  "data-direct-upload-id", "data-sgid", "filename", "filesize", "height", "href", "presentation",
-  "previewable", "sgid", "src", "title", "url", "width" ]
+  "data-create-meta-content", "data-delete-meta-content", "data-direct-upload-id", "data-selection-group", "data-sgid", "dir", "filename", "filesize", "height", "href", "presentation",
+  "previewable", "sgid", "src", "style", "title", "url", "width" ]
 
 export function createElement(name, properties) {
   const element = document.createElement(name)

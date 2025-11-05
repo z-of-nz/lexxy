@@ -5556,12 +5556,12 @@ const VISUALLY_RELEVANT_ELEMENTS_SELECTOR = [
   "form", "input", "textarea", "select", "button", "code", "blockquote", "hr"
 ].join(",");
 
-const ALLOWED_HTML_TAGS = [ "a", "action-text-attachment", "b", "blockquote", "br", "code", "em",
-  "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "li", "ol", "p", "pre", "q", "s", "strong", "ul" ];
+const ALLOWED_HTML_TAGS = [ "a", "action-text-attachment", "action-text-attachment-mark-node", "b", "blockquote", "br", "code", "em",
+  "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "li", "ol", "p", "pre", "q", "s", "span", "strong", "ul" ];
 
 const ALLOWED_HTML_ATTRIBUTES = [ "alt", "caption", "class", "content", "content-type", "contenteditable",
-  "data-direct-upload-id", "data-sgid", "filename", "filesize", "height", "href", "presentation",
-  "previewable", "sgid", "src", "title", "url", "width" ];
+  "data-create-meta-content", "data-delete-meta-content", "data-direct-upload-id", "data-selection-group", "data-sgid", "dir", "filename", "filesize", "height", "href", "presentation",
+  "previewable", "sgid", "src", "style", "title", "url", "width" ];
 
 function createElement(name, properties) {
   const element = document.createElement(name);
@@ -6141,7 +6141,12 @@ class ActionTextAttachmentMarkNode extends f {
     }
 
     static importJSON(serializedNode) {
-        return $createActionTextAttachmentMarkNode(serializedNode.dataset, serializedNode.sgid)
+        const node = new ActionTextAttachmentMarkNode(
+            serializedNode.ids || [],
+            serializedNode.dataset,
+            serializedNode.sgid
+        );
+        return fs(node)
     }
 
     static importDOM() {
@@ -6225,8 +6230,8 @@ class ActionTextAttachmentMarkNode extends f {
         }
         // Also check that dataset and sgid match
         return node instanceof ActionTextAttachmentMarkNode &&
-            this.sgid === node.sgid &&
-            this.__dataset.selectionGroup === node.__dataset.selectionGroup
+               this.sgid === node.sgid &&
+               this.__dataset.selectionGroup === node.__dataset.selectionGroup
     }
 
     excludeFromCopy(destination) {
@@ -6250,7 +6255,7 @@ class ActionTextAttachmentMarkNode extends f {
 }
 
 function $createActionTextAttachmentMarkNode(dataset = {}, sgid = null) {
-    return fs(new ActionTextAttachmentMarkNode([], dataset, sgid))
+    return fs(new ActionTextAttachmentMarkNode([], dataset, sgid));
 }
 
 const COMMANDS = [
