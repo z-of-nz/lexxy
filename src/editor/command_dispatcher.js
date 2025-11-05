@@ -1,6 +1,8 @@
 import {
   $createTextNode,
+  $getRoot,
   $getSelection,
+  $isElementNode,
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
@@ -16,6 +18,8 @@ import { $createAutoLinkNode, $toggleLink } from "@lexical/link"
 import { createElement } from "../helpers/html_helper"
 import { getListType } from "../helpers/lexical_helper"
 import { HorizontalDividerNode } from "../nodes/horizontal_divider_node"
+import { ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
+import { $wrapSelectionInMarkNode } from "@lexical/mark"
 
 const COMMANDS = [
   "bold",
@@ -31,7 +35,9 @@ const COMMANDS = [
   "insertHorizontalDivider",
   "uploadAttachments",
   "undo",
-  "redo"
+  "redo",
+  "insertMarkNodeOnSelection",
+  "insertMarkNodeDeletionTrigger"
 ]
 
 export class CommandDispatcher {
@@ -129,6 +135,38 @@ export class CommandDispatcher {
   dispatchInsertHorizontalDivider() {
     this.editor.update(() => {
       this.contents.insertAtCursor(new HorizontalDividerNode())
+    })
+  }
+
+  dispatchInsertMarkNodeOnSelection(metaContent) {
+    const selection = $getSelection()
+    this.editor.update(() => {
+      if ($isRangeSelection(selection)) {
+        const isBackward = selection.isBackward()
+        let i = 0
+        const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("")
+        $wrapSelectionInMarkNode(selection, isBackward, "", ([]) => {
+          const dataset = { selectionGroup: selectionGroupId }
+          if (i === 0) { dataset.createMetaContent = metaContent; i++ }
+          return new ActionTextAttachmentMarkNode([], dataset)
+        })
+      }
+    })
+  }
+
+  dispatchInsertMarkNodeDeletionTrigger(sgid) {
+    this.editor.update(() => {
+      const rootNode = $getRoot()
+      function traverse(node){
+        if (node.getType() === "action_text_attachment_mark_node" && node.sgid && node.sgid === sgid) {
+          const writableNode = node.getWritable()
+          writableNode.__dataset.deleteMetaContent = true
+        }
+        if ($isElementNode(node)) {
+          node.getChildren().forEach(traverse)
+        }
+      }
+      traverse(rootNode)
     })
   }
 
