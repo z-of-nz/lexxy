@@ -15,7 +15,7 @@ import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from "@lex
 import { $createHeadingNode, $createQuoteNode, $isHeadingNode, $isQuoteNode } from "@lexical/rich-text"
 import { $isCodeNode, CodeNode } from "@lexical/code"
 import { $createAutoLinkNode, $toggleLink } from "@lexical/link"
-import { createElement } from "../helpers/html_helper"
+import { createElement, dispatch } from "../helpers/html_helper"
 import { getListType } from "../helpers/lexical_helper"
 import { HorizontalDividerNode } from "../nodes/horizontal_divider_node"
 import { ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
@@ -151,6 +151,7 @@ export class CommandDispatcher {
           return new ActionTextAttachmentMarkNode([], dataset)
         })
       }
+      dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection")
     })
   }
 

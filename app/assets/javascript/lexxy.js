@@ -6388,6 +6388,7 @@ class CommandDispatcher {
           return new ActionTextAttachmentMarkNode([], dataset)
         });
       }
+      dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection");
     });
   }
 
