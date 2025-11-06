@@ -6379,16 +6379,16 @@ class CommandDispatcher {
     const selection = Lr();
     this.editor.update(() => {
       if (yr(selection)) {
+        const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("");
         const isBackward = selection.isBackward();
         let i = 0;
-        const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("");
         m$1(selection, isBackward, "", ([]) => {
           const dataset = { selectionGroup: selectionGroupId };
           if (i === 0) { dataset.createMetaContent = metaContent; i++; }
           return new ActionTextAttachmentMarkNode([], dataset)
         });
+        dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection", { selectionGroupId: selectionGroupId });
       }
-      dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection");
     });
   }
 
