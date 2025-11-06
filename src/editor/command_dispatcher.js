@@ -141,8 +141,8 @@ export class CommandDispatcher {
   dispatchInsertMarkNodeOnSelection(metaContent) {
     const selection = $getSelection()
     this.editor.update(() => {
+      const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("")
       if ($isRangeSelection(selection)) {
-        const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("")
         const isBackward = selection.isBackward()
         let i = 0
         $wrapSelectionInMarkNode(selection, isBackward, "", ([]) => {
@@ -152,7 +152,6 @@ export class CommandDispatcher {
         })
         dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection", { selectionGroupId: selectionGroupId })
       }
-      dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection")
     })
   }
 

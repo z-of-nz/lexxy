@@ -6378,8 +6378,8 @@ class CommandDispatcher {
   dispatchInsertMarkNodeOnSelection(metaContent) {
     const selection = Lr();
     this.editor.update(() => {
+      const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("");
       if (yr(selection)) {
-        const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("");
         const isBackward = selection.isBackward();
         let i = 0;
         m$1(selection, isBackward, "", ([]) => {
