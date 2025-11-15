@@ -32,6 +32,22 @@ export default class Contents {
     })
   }
 
+  insertAttachment({ content, sgid, contentType = "text/html" }) {
+    if (!content || !sgid) {
+      console.error("insertAttachment requires both 'content' and 'sgid' parameters")
+      return
+    }
+
+    this.editor.update(() => {
+      const attachmentNode = new CustomActionTextAttachmentNode({
+        sgid: sgid,
+        contentType: contentType,
+        innerHtml: content
+      })
+      this.insertAtCursor(attachmentNode)
+    })
+  }
+
   insertAtCursor(node) {
     this.editor.update(() => {
       const selection = $getSelection()

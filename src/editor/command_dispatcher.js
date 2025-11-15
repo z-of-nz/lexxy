@@ -6,6 +6,7 @@ import {
   FORMAT_TEXT_COMMAND,
   PASTE_COMMAND,
   REDO_COMMAND,
+  $isElementNode,
   UNDO_COMMAND
 } from "lexical"
 
@@ -13,11 +14,15 @@ import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from "@lex
 import { $createHeadingNode, $createQuoteNode, $isHeadingNode, $isQuoteNode } from "@lexical/rich-text"
 import { $isCodeNode, CodeNode } from "@lexical/code"
 import { $createAutoLinkNode, $toggleLink } from "@lexical/link"
-import { createElement } from "../helpers/html_helper"
+import { createElement, dispatch } from "../helpers/html_helper"
 import { getListType } from "../helpers/lexical_helper"
 import { HorizontalDividerNode } from "../nodes/horizontal_divider_node"
+import { ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
+import { $wrapSelectionInMarkNode } from "@lexical/mark"
 
 const COMMANDS = [
+  "insertMarkNodeOnSelection",
+  "insertMarkNodeDeletionTrigger",
   "bold",
   "italic",
   "strikethrough",
@@ -123,6 +128,39 @@ export class CommandDispatcher {
       } else {
         this.contents.toggleNodeWrappingAllSelectedLines((node) => $isCodeNode(node), () => new CodeNode("plain"))
       }
+    })
+  }
+
+  dispatchInsertMarkNodeOnSelection(metaContent) {
+    const selection = $getSelection()
+    this.editor.update(() => {
+      const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("")
+      if ($isRangeSelection(selection)) {
+        const isBackward = selection.isBackward()
+        let i = 0
+        $wrapSelectionInMarkNode(selection, isBackward, "", ([]) => {
+          const dataset = { selectionGroup: selectionGroupId }
+          if (i === 0) { dataset.createMetaContent = metaContent; i++ }
+          return new ActionTextAttachmentMarkNode([], dataset)
+        })
+        dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection", { selectionGroupId: selectionGroupId })
+      }
+    })
+  }
+
+  dispatchInsertMarkNodeDeletionTrigger(sgid) {
+    this.editor.update(() => {
+      const rootNode = $getRoot()
+      function traverse(node){
+        if (node.getType() === "action_text_attachment_mark_node" && node.sgid && node.sgid === sgid) {
+          const writableNode = node.getWritable()
+          writableNode.__dataset.deleteMetaContent = true
+        }
+        if ($isElementNode(node)) {
+          node.getChildren().forEach(traverse)
+        }
+      }
+      traverse(rootNode)
     })
   }
 

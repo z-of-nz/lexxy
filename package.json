@@ -41,6 +41,7 @@
     "@lexical/utils": "^0.38.2",
     "dompurify": "^3.3.0",
     "marked": "^16.4.1",
+    "@lexical/mark": "^0.38.2",
     "prismjs": "^1.30.0"
   },
   "peerDependencies": {

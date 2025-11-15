@@ -382,3 +382,22 @@
     --lexxy-attachment-text-color: var(--lexxy-color-ink-inverted);
   }
 }
+
+/* in :where(.lexxy-content) **/
+
+action-text-attachment-mark-node {
+  &:not(lexxy-editor &) {
+    display: inline;
+    border-bottom: 2px solid rgba(255, 212, 0, 1);
+  }
+}
+
+
+:where(lexxy-editor) {
+  action-text-attachment-mark-node {
+    display: inline;
+    span {
+      border-bottom: 2px solid rgba(255,212,0,1);
+    }
+  }
+}

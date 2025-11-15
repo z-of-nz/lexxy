@@ -19,6 +19,9 @@ import Contents from "../editor/contents"
 import Clipboard from "../editor/clipboard"
 import { CustomActionTextAttachmentNode } from "../nodes/custom_action_text_attachment_node"
 
+import { MarkNode } from "@lexical/mark"
+import { $createActionTextAttachmentMarkNode, ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
+
 export default class LexicalEditorElement extends HTMLElement {
   static formAssociated = true
   static debug = true
@@ -188,6 +191,13 @@ export default class LexicalEditorElement extends HTMLElement {
       HorizontalDividerNode,
 
       CustomActionTextAttachmentNode,
+      MarkNode,
+      ActionTextAttachmentMarkNode,
+      {
+        replace: MarkNode,
+        with: () => $createActionTextAttachmentMarkNode(),
+        withKlass: ActionTextAttachmentMarkNode
+      },
     ]
 
     if (this.supportsAttachments) {
