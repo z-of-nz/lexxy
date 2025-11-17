@@ -6399,7 +6399,7 @@ class CommandDispatcher {
 
   dispatchInsertMarkNodeDeletionTrigger(sgid) {
     this.editor.update(() => {
-      const rootNode = $getRoot();
+      const rootNode = No();
       function traverse(node){
         if (node.getType() === "action_text_attachment_mark_node" && node.sgid && node.sgid === sgid) {
           const writableNode = node.getWritable();

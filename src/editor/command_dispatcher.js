@@ -2,6 +2,7 @@ import {
   $createTextNode,
   $getSelection,
   $isRangeSelection,
+  $getRoot,
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
   PASTE_COMMAND,
