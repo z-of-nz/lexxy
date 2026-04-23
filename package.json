@@ -64,7 +64,8 @@
     "dompurify": "^3.3.0",
     "lexical": "^0.43.0",
     "marked": "^16.4.1",
-    "prismjs": "^1.30.0"
+    "prismjs": "^1.30.0",
+    "@lexical/mark": "^0.43.0"
   },
   "peerDependencies": {
     "@rails/activestorage": ">= 7.0.0"

@@ -1,6 +1,8 @@
 import {
   $createTextNode,
+  $getRoot,
   $getSelection,
+  $isElementNode,
   $isRangeSelection,
   $isTextNode,
   $setSelection,
@@ -20,11 +22,13 @@ import { $createAutoLinkNode, $toggleLink, LinkNode } from "@lexical/link"
 import { $getNearestNodeOfType } from "@lexical/utils"
 import { INSERT_TABLE_COMMAND } from "@lexical/table"
 
-import { createElement } from "../helpers/html_helper"
+import { createElement, dispatch } from "../helpers/html_helper"
 import { ListenerBin, registerEventListener } from "../helpers/listener_helper"
 import { getListType } from "../helpers/lexical_helper"
 import { HorizontalDividerNode } from "../nodes/horizontal_divider_node"
 import { REMOVE_HIGHLIGHT_COMMAND, TOGGLE_HIGHLIGHT_COMMAND } from "../extensions/highlight_extension"
+import { ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
+import { $wrapSelectionInMarkNode } from "@lexical/mark"
 
 const COMMANDS = [
   "bold",
@@ -52,7 +56,10 @@ const COMMANDS = [
   "insertTable",
 
   "undo",
-  "redo"
+  "redo",
+
+  "insertMarkNodeOnSelection",
+  "insertMarkNodeDeletionTrigger"
 ]
 
 export class CommandDispatcher {
@@ -294,6 +301,37 @@ export class CommandDispatcher {
 
   dispatchRedo() {
     this.editor.dispatchCommand(REDO_COMMAND, undefined)
+  }
+
+  dispatchInsertMarkNodeOnSelection(metaContent) {
+    this.editor.update(() => {
+      const selection = $getSelection()
+      if (!$isRangeSelection(selection)) return
+
+      const selectionGroupId = [ ...Array(8) ].map(() => Math.floor(Math.random() * 16).toString(16)).join("")
+      const isBackward = selection.isBackward()
+      let i = 0
+      $wrapSelectionInMarkNode(selection, isBackward, "", () => {
+        const dataset = { selectionGroup: selectionGroupId }
+        if (i === 0) { dataset.createMetaContent = metaContent; i++ }
+        return new ActionTextAttachmentMarkNode([], dataset)
+      })
+      dispatch(this.editorElement, "lexxy:addMarkNodeOnSelection", { selectionGroupId })
+    })
+  }
+
+  dispatchInsertMarkNodeDeletionTrigger(sgid) {
+    this.editor.update(() => {
+      function traverse(node) {
+        if (node.getType() === "action_text_attachment_mark_node" && node.sgid && node.sgid === sgid) {
+          node.getWritable().__dataset.deleteMetaContent = true
+        }
+        if ($isElementNode(node)) {
+          node.getChildren().forEach(traverse)
+        }
+      }
+      traverse($getRoot())
+    })
   }
 
   dispose() {

@@ -443,6 +443,20 @@ export class LexicalToolbarElement extends HTMLElement {
         ${ToolbarIcons.hr}
       </button>
 
+      <details class="lexxy-editor__toolbar-dropdown" name="lexxy-dropdown">
+        <summary class="lexxy-editor__toolbar-button" name="comment" title="Comment" data-hotkey="cmd+q ctrl+q">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24,6.014c0,-1.966 -1.391,-3.563 -3.104,-3.563l-17.792,0c-1.713,0 -3.104,1.597 -3.104,3.563l0,7.125c0,1.966 1.391,3.562 3.104,3.562l4.696,0l-3,6.107l10.306,-6.107l5.79,0c1.713,0 3.104,-1.596 3.104,-3.562l0,-7.125Z"/></svg>
+        </summary>
+        <lexxy-comment-dropdown class="lexxy-editor__toolbar-dropdown-content">
+          <form method="dialog">
+            <textarea rows="10" placeholder="Comment…" class="input" required></textarea>
+            <div class="lexxy-editor__toolbar-dropdown-actions">
+              <button type="submit" value="insertMarkNodeOnSelection" class="btn">Save</button>
+            </div>
+          </form>
+        </lexxy-comment-dropdown>
+      </details>
+
       <div class="lexxy-editor__toolbar-spacer" role="separator"></div>
 
       <button class="lexxy-editor__toolbar-button" type="button" name="undo" data-command="undo" title="Undo">

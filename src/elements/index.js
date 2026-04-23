@@ -3,6 +3,7 @@ import Toolbar from "./toolbar"
 import Editor from "./editor"
 import DropdownLink from "./dropdown/link"
 import DropdownHighlight from "./dropdown/highlight"
+import CommentDropdown from "./dropdown/comment"
 import Prompt from "./prompt"
 import CodeLanguagePicker from "./code_language_picker"
 import NodeDeleteButton from "./node_delete_button"
@@ -14,6 +15,7 @@ export function defineElements() {
     "lexxy-editor": Editor,
     "lexxy-link-dropdown": DropdownLink,
     "lexxy-highlight-dropdown": DropdownHighlight,
+    "lexxy-comment-dropdown": CommentDropdown,
     "lexxy-prompt": Prompt,
     "lexxy-code-language-picker": CodeLanguagePicker,
     "lexxy-node-delete-button": NodeDeleteButton,

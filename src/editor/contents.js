@@ -61,6 +61,22 @@ export default class Contents {
     this.#insertLineBelowIfLastNode(node)
   }
 
+  insertAttachment({ content, sgid, contentType = "text/html" }) {
+    if (!content || !sgid) {
+      console.error("insertAttachment requires both 'content' and 'sgid' parameters")
+      return
+    }
+
+    this.editor.update(() => {
+      const attachmentNode = new CustomActionTextAttachmentNode({
+        sgid,
+        contentType,
+        innerHtml: content
+      })
+      this.insertAtCursor(attachmentNode)
+    })
+  }
+
   applyParagraphFormat() {
     const selection = $getSelection()
     if (!$isRangeSelection(selection)) return

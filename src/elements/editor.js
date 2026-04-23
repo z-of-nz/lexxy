@@ -31,6 +31,8 @@ import { styleResolverRoot } from "../helpers/style_resolver_root"
 
 import { CustomActionTextAttachmentNode } from "../nodes/custom_action_text_attachment_node"
 import { exportTextNodeDOM } from "../helpers/text_node_export_helper"
+import { MarkNode } from "@lexical/mark"
+import { $createActionTextAttachmentMarkNode, ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
 import { ProvisionalParagraphExtension } from "../extensions/provisional_paragraph_extension"
 import { HighlightExtension } from "../extensions/highlight_extension"
 import { TrixContentExtension } from "../extensions/trix_content_extension"
@@ -348,7 +350,14 @@ export class LexicalEditorElement extends HTMLElement {
         CodeHighlightNode,
         LinkNode,
         AutoLinkNode,
-        HorizontalDividerNode
+        HorizontalDividerNode,
+        MarkNode,
+        ActionTextAttachmentMarkNode,
+        {
+          replace: MarkNode,
+          with: () => $createActionTextAttachmentMarkNode(),
+          withKlass: ActionTextAttachmentMarkNode
+        }
       )
     }
 
@@ -600,7 +609,10 @@ export class LexicalEditorElement extends HTMLElement {
   }
 
   get #allowedElements() {
-    return this.#importableTags.concat(this.extensions.allowedElements)
+    const markAttributes = [ "sgid", "content-type", "data-create-meta-content", "data-delete-meta-content", "data-selection-group" ]
+    return this.#importableTags.concat(this.extensions.allowedElements).concat([
+      { tag: "action-text-attachment-mark-node", attributes: markAttributes }
+    ])
   }
 
   get #importableTags() {
