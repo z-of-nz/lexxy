@@ -27,7 +27,6 @@ import { ListenerBin, registerEventListener } from "../helpers/listener_helper"
 import { getListType } from "../helpers/lexical_helper"
 import { HorizontalDividerNode } from "../nodes/horizontal_divider_node"
 import { REMOVE_HIGHLIGHT_COMMAND, TOGGLE_HIGHLIGHT_COMMAND } from "../extensions/highlight_extension"
-import { SET_SUB_SCRIPT_COMMAND, SET_SUP_SCRIPT_COMMAND } from "../extensions/off_script_extension"
 import { ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
 import { $wrapSelectionInMarkNode } from "@lexical/mark"
 
@@ -62,8 +61,6 @@ const COMMANDS = [
   "insertMarkNodeOnSelection",
   "insertMarkNodeDeletionTrigger",
 
-  "setSuperScript",
-  "setSubScript"
 ]
 
 export class CommandDispatcher {

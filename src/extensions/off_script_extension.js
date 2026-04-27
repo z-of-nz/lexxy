@@ -35,21 +35,22 @@ export class OffScriptExtension extends LexxyExtension {
     }
 
     initializeToolbar(lexxyToolbar) {
-        const subButton  = document.createElement("button")
-        subButton.className = "lexxy-editor__toolbar-button"
-        subButton.setAttribute("type", "button")
-        subButton.setAttribute("data-command", "setSubScript")
-        subButton.innerHTML = "▼"
+        const editor = this.editorElement.editor
+        const boldButton = lexxyToolbar.querySelector("button[name=bold]")
+        boldButton.insertAdjacentElement("afterend", this.#createButton("▼", SET_SUB_SCRIPT_COMMAND, editor))
+        boldButton.insertAdjacentElement("afterend", this.#createButton("▲", SET_SUP_SCRIPT_COMMAND, editor))
+    }
 
-        lexxyToolbar.querySelector("button[name=bold]").insertAdjacentElement("afterend", subButton)
-
-        const supButton  = document.createElement("button")
-        supButton.className = "lexxy-editor__toolbar-button"
-        supButton.setAttribute("type", "button")
-        supButton.setAttribute("data-command", "setSuperScript")
-        supButton.innerHTML = "▲"
-
-        lexxyToolbar.querySelector("button[name=bold]").insertAdjacentElement("afterend", supButton)
+    #createButton(label, command, editor) {
+        const button = document.createElement("button")
+        button.className = "lexxy-editor__toolbar-button"
+        button.type = "button"
+        button.textContent = label
+        button.addEventListener("mousedown", (event) => {
+            event.preventDefault()
+            editor.dispatchCommand(command, undefined)
+        })
+        return button
     }
 }
 
