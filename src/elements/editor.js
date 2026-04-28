@@ -41,6 +41,7 @@ import { AttachmentsExtension } from "../extensions/attachments_extension.js"
 import { FormatEscapeExtension } from "../extensions/format_escape_extension.js"
 import { LinkOpenerExtension } from "../extensions/link_opener_extension.js"
 import { OffScriptExtension } from "../extensions/off_script_extension.js"
+import { CommentingExtension } from "../extensions/commenting_extension.js"
 
 
 export class LexicalEditorElement extends HTMLElement {
@@ -150,7 +151,8 @@ export class LexicalEditorElement extends HTMLElement {
       AttachmentsExtension,
       FormatEscapeExtension,
       LinkOpenerExtension,
-      OffScriptExtension
+      OffScriptExtension,
+      CommentingExtension
     ]
   }
 
@@ -369,7 +371,7 @@ export class LexicalEditorElement extends HTMLElement {
   #createEditorContentElement() {
     const editorContentElement = createElement("div", {
       classList: "lexxy-editor__content",
-      contenteditable: true,
+      contenteditable: (this.getAttribute("data-comment-mode") != "true"),
       autocapitalize: "none",
       role: "textbox",
       "aria-multiline": true,
