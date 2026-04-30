@@ -282,11 +282,26 @@ export class LexicalEditorElement extends HTMLElement {
 
   #parseHtmlIntoLexicalNodes(html) {
     if (!html) html = "<p></p>"
-    const nodes = $generateNodesFromDOM(this.editor, parseHtml(`${html}`))
+    const doc = parseHtml(`${html}`)
+    this.#markCustomInlineElements(doc)
+    const nodes = $generateNodesFromDOM(this.editor, doc)
 
     return nodes
       .filter(this.#isNotWhitespaceOnlyNode)
       .map(this.#wrapTextNode)
+  }
+
+  // Lexical's isInlineDomNode only recognizes standard HTML elements as inline.
+  // Custom elements like action-text-attachment-mark-node are not in that list,
+  // so Lexical's whitespace normalizer (findTextInLine) treats them as block
+  // boundaries and strips spaces from adjacent text nodes. Setting display:inline
+  // as an inline style on the DOM element before import makes findTextInLine
+  // treat them as inline, preserving surrounding spaces. The style is set only
+  // on the transient import DOM and is never written to the stored HTML.
+  #markCustomInlineElements(doc) {
+    for (const el of doc.querySelectorAll("action-text-attachment-mark-node")) {
+      el.style.display = "inline"
+    }
   }
 
   // Whitespace-only text nodes (e.g. "\n" between block elements like <div>) and stray line break
