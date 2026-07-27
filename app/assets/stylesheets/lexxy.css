@@ -1,2 +1,41 @@
 @import url("lexxy-content.css");
 @import url("lexxy-editor.css");
+
+action-text-attachment-mark-node {
+    &:not(lexxy-editor &) {
+        display: inline;
+        border-bottom: 2px solid rgba(255, 212, 0, 1);
+    }
+}
+
+:where(lexxy-editor) {
+    action-text-attachment-mark-node {
+        display: inline;
+
+        span {
+            border-bottom: 2px solid rgba(255, 212, 0, 1);
+        }
+    }
+}
+
+:where(lexxy-comment-dropdown) {
+    & .lexxy-editor__toolbar-dropdown-actions {
+        display: flex;
+        font-size: var(--lexxy-text-small);
+        flex: 1 1 0%;
+        gap: 1ch;
+        margin-block-start: 1ch;
+    }
+
+    & button[type="submit"] {
+        inline-size: 100%;
+        justify-content: center;
+        background-color: var(--lexxy-color-accent-dark);
+        color: var(--lexxy-color-ink-inverted);
+        line-height: 1.5lh;
+    }
+
+    & textarea {
+        padding: 0.5rem !important;
+    }
+}

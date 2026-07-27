@@ -8,6 +8,7 @@ import Prompt from "./prompt"
 import CodeLanguagePicker from "./code_language_picker"
 import NodeDeleteButton from "./node_delete_button"
 import TableTools from "./table/table_tools"
+import CommentDropdown from "./dropdown/comment"
 
 export function defineElements() {
   const elements = {
@@ -17,7 +18,7 @@ export function defineElements() {
     "lexxy-heading-dropdown": HeadingDropdown,
     "lexxy-highlight-dropdown": HighlightDropdown,
     "lexxy-link-dropdown": LinkDropdown,
-
+    "lexxy-comment-dropdown": CommentDropdown,
     "lexxy-editor": Editor,
 
     // Prompt must be registered AFTER Editor

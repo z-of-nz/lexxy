@@ -31,7 +31,8 @@ import Extensions from "../editor/extensions"
 import { BrowserAdapter } from "../editor/adapters/browser_adapter"
 import { getHighlightStyles } from "../helpers/format_helper"
 import { styleResolverRoot } from "../helpers/style_resolver_root"
-
+import { MarkNode } from "@lexical/mark"
+import { $createActionTextAttachmentMarkNode, ActionTextAttachmentMarkNode } from "../nodes/action_text_attachment_mark_node"
 import { CustomActionTextAttachmentNode } from "../nodes/custom_action_text_attachment_node"
 import { exportTextNodeDOM } from "../helpers/text_node_export_helper"
 import { ProvisionalParagraphExtension } from "../extensions/provisional_paragraph_extension"
@@ -46,6 +47,8 @@ import { LinkOpenerExtension } from "../extensions/link_opener_extension.js"
 import { PreventLexicalTripleClickExtension } from "../extensions/prevent_lexical_triple_click_extension.js"
 import { CustomAttachmentDragAndDropExtension } from "../extensions/custom_attachment_drag_and_drop_extension.js"
 import { nextFrame } from "../helpers/timing_helper.js"
+import { CommentingExtension } from "../extensions/commenting_extension.js"
+import { OffScriptExtension } from "../extensions/off_script_extension.js"
 
 
 export class LexicalEditorElement extends HTMLElement {
@@ -206,7 +209,9 @@ export class LexicalEditorElement extends HTMLElement {
       FormatEscapeExtension,
       LinkOpenerExtension,
       PreventLexicalTripleClickExtension,
-      CustomAttachmentDragAndDropExtension
+      CustomAttachmentDragAndDropExtension,
+      CommentingExtension,
+      OffScriptExtension
     ]
   }
 
@@ -365,12 +370,28 @@ export class LexicalEditorElement extends HTMLElement {
 
   #parseHtmlIntoLexicalNodes(html, { editor = this.editor } = {}) {
     if (!html) html = "<p></p>"
-    const nodes = this.$generateNodesFromDOM(parseHtml(`${html}`), { editor })
+    const doc = parseHtml(`${html}`)
+    this.#markCustomInlineElements(doc)
+    const nodes = this.$generateNodesFromDOM(doc, { editor })
 
     return nodes
       .filter(this.#isNotWhitespaceOnlyNode)
       .map(this.#wrapTextNode)
   }
+
+  // Lexical's isInlineDomNode only recognizes standard HTML elements as inline.
+  // Custom elements like action-text-attachment-mark-node are not in that list,
+  // so Lexical's whitespace normalizer (findTextInLine) treats them as block
+  // boundaries and strips spaces from adjacent text nodes. Setting display:inline
+  // as an inline style on the DOM element before import makes findTextInLine
+  // treat them as inline, preserving surrounding spaces. The style is set only
+  // on the transient import DOM and is never written to the stored HTML.
+  #markCustomInlineElements(doc) {
+    for (const el of doc.querySelectorAll("action-text-attachment-mark-node")) {
+      el.style.display = "inline"
+    }
+  }
+
 
   // Whitespace-only text nodes (e.g. "\n" between block elements like <div>) and stray line break
   // nodes are formatting artifacts from the HTML source. They can't be appended to the root node
@@ -459,7 +480,14 @@ export class LexicalEditorElement extends HTMLElement {
         CodeHighlightNode,
         LinkNode,
         AutoLinkNode,
-        HorizontalDividerNode
+        HorizontalDividerNode,
+        MarkNode,
+        ActionTextAttachmentMarkNode,
+        {
+          replace: MarkNode,
+          with: () => $createActionTextAttachmentMarkNode(),
+          withKlass: ActionTextAttachmentMarkNode
+        }
       )
     }
 
@@ -470,7 +498,7 @@ export class LexicalEditorElement extends HTMLElement {
     const editorContentElement = createElement("div", {
       id: `${this.id}-content`,
       classList: "lexxy-editor__content",
-      contenteditable: true,
+      contenteditable: (this.getAttribute("data-comment-mode") !== "true"),
       role: "textbox",
       "aria-multiline": true,
       "aria-label": this.#labelText,
@@ -757,7 +785,10 @@ export class LexicalEditorElement extends HTMLElement {
   }
 
   #getAllowedElements(editor) {
-    return this.#getImportableTags(editor).concat(this.extensions.allowedElements)
+    const markAttributes = [ "sgid", "content-type", "data-create-meta-content", "data-delete-meta-content", "data-selection-group" ]
+    return this.#getImportableTags(editor).concat(this.extensions.allowedElements).concat([
+      { tag: "action-text-attachment-mark-node", attributes: markAttributes }
+    ])
   }
 
   #getImportableTags(editor) {
